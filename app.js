@@ -1,5 +1,3 @@
-var a = "hello world";
-const {calVariable,sum} = require('./calculation');
-
-console.log(sum(2,3));
-console.log(calVariable);
+// const libUv= require('./libUVOutput');
+// const libUv2= require('./libUVOutput2');
+const libUv2= require('./libUVOutput3');
