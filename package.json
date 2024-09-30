@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev":"nodemon middleware.js"
+    "dev":"nodemon error.js"
   },
   "dependencies": {
     "express": "^4.21.0",
