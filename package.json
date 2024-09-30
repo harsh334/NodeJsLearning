@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev":"nodemon routes.js"
+    "dev":"nodemon middleware.js"
   },
   "dependencies": {
     "express": "^4.21.0",
