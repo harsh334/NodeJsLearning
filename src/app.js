@@ -17,9 +17,13 @@ app.use(express.json()); // middleware for reading the json data from request bo
 
 //post
 app.post('/signup',async (req,res)=>{
-   const user = new User(req.body);
-   await user.save();
-   res.send("user added successsfully");
+   try{
+      const user = new User(req.body);
+      await user.save();
+      res.send("user added successsfully");
+   } catch(err){
+      res.status(400).send(err.message);
+   }
 });
 
 //get all data
@@ -51,10 +55,21 @@ app.get('/user',async (req,res)=>{
 
 //update
 app.patch('/updateUser',async (req,res)=>{
-   const userId = req.body.Id;
-   const user = await User.findByIdAndUpdate(userId,req.body,{returnDocument : 'after'});
-   console.log(user);
-   res.send("user updated successfully");
+   try{
+      const userId = req.body.Id;
+      const data = req.body;
+      const allowedUpdates = ["Id","firstName","lastName","emailId","age"];
+      const isAllowedUpdate = Object.keys(data).every((k)=>
+         allowedUpdates.includes(k));
+      if(!isAllowedUpdate){
+         throw new Error("Can only update firstName and age");
+      }
+      const user = await User.findByIdAndUpdate(userId,req.body,{returnDocument : 'after',runValidators:true});
+      console.log(user);
+      res.send("user updated successfully");
+   }catch(err){
+      res.status(400).send(err.message);
+   }
 })
 
 //delete
