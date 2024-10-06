@@ -3,6 +3,8 @@ const dbConnect = require('./config/database.js');
 const User = require('./models/user.js');
 const validation = require("./utils/validation.js");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
@@ -16,7 +18,7 @@ dbConnect().then(()=>{
 });
 
 app.use(express.json()); // middleware for reading the json data from request body
-
+app.use(cookieParser()); //middleware for reading the cookies
 //post
 app.post('/signup',async (req,res)=>{
    try{
@@ -24,7 +26,7 @@ app.post('/signup',async (req,res)=>{
       validation.validateSignUp(req);
       const {firstName,lastName,emailId,password} = req.body;
       console.log("sistname",firstName);
-      
+
       //eecryption
       const hashedPassword = await bcrypt.hash(password,10);
       const user = new User({firstName,lastName,emailId,password:hashedPassword});
@@ -47,12 +49,34 @@ app.post('/login',async (req,res)=>{
       if(!isPasswordValid){
          throw new Error("Invalid credentials");
       }
+      //jwt token
+      const token = await jwt.sign({_id:user._id},"privateKeyThatOnlyServerAndIKnows");
+      console.log(token);
+      res.cookie("token",token);
       res.send("Login successfull");
    }catch(err){
       res.status(400).send("error occured " + err.message)
    }
-   
 });
+
+app.get("/profile",async (req,res)=>{
+   try{
+      const cookies = req.cookies;
+      const {token} = cookies;
+      if(!token){
+         throw new Error("Invalid Token");
+      }
+      const encodedUserFromCookie = await jwt.verify(token,"privateKeyThatOnlyServerAndIKnows");
+      const {_id} = encodedUserFromCookie;
+      const user  = await User.findById({_id});
+      if(!user){
+         throw new Error("User not found");
+      }
+      res.send(user);
+   }catch(err){
+      res.status(400).send("Error Occured "+ err.message);
+   }
+})
 
 //get all data
 app.get('/feed',async (req,res)=>{
