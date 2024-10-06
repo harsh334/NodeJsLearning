@@ -51,7 +51,7 @@ app.post('/login',async (req,res)=>{
          throw new Error("Invalid credentials");
       }
       //jwt token
-      const token = await jwt.sign({_id:user._id},"privateKeyThatOnlyServerAndIKnows");
+      const token = await jwt.sign({_id:user._id},"privateKeyThatOnlyServerAndIKnows",{expiresIn:"7d"});
       console.log(token);
       res.cookie("token",token);
       res.send("Login successfull");
@@ -62,17 +62,6 @@ app.post('/login',async (req,res)=>{
 
 app.get("/profile",userAuth,async (req,res)=>{
    try{
-      // const cookies = req.cookies;
-      // const {token} = cookies;
-      // if(!token){
-      //    throw new Error("Invalid Token");
-      // }
-      // const encodedUserFromCookie = await jwt.verify(token,"privateKeyThatOnlyServerAndIKnows");
-      // const {_id} = encodedUserFromCookie;
-      // const user  = await User.findById({_id});
-      // if(!user){
-      //    throw new Error("User not found");
-      // }
       res.send(req.user);
    }catch(err){
       res.status(400).send("Error Occured "+ err.message);
