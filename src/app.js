@@ -5,6 +5,7 @@ const validation = require("./utils/validation.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const {userAuth} = require("./middlewares/auth.js");
 
 const app = express();
 
@@ -59,20 +60,20 @@ app.post('/login',async (req,res)=>{
    }
 });
 
-app.get("/profile",async (req,res)=>{
+app.get("/profile",userAuth,async (req,res)=>{
    try{
-      const cookies = req.cookies;
-      const {token} = cookies;
-      if(!token){
-         throw new Error("Invalid Token");
-      }
-      const encodedUserFromCookie = await jwt.verify(token,"privateKeyThatOnlyServerAndIKnows");
-      const {_id} = encodedUserFromCookie;
-      const user  = await User.findById({_id});
-      if(!user){
-         throw new Error("User not found");
-      }
-      res.send(user);
+      // const cookies = req.cookies;
+      // const {token} = cookies;
+      // if(!token){
+      //    throw new Error("Invalid Token");
+      // }
+      // const encodedUserFromCookie = await jwt.verify(token,"privateKeyThatOnlyServerAndIKnows");
+      // const {_id} = encodedUserFromCookie;
+      // const user  = await User.findById({_id});
+      // if(!user){
+      //    throw new Error("User not found");
+      // }
+      res.send(req.user);
    }catch(err){
       res.status(400).send("Error Occured "+ err.message);
    }
