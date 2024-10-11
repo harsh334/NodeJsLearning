@@ -48,6 +48,8 @@ userSchema.methods.getJWT = function (){
 	return token;
 }
 
+// userSchema.index({firstName:1,lastName:1}); //create an compound index 
+
 userSchema.methods.validatePassword = function (password){
 	const user = this;
 	const hasedPassword = user.password;

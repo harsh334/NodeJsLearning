@@ -22,6 +22,13 @@ connectionRouter.post("/request/send/:status/:toUserId",userAuth,async (req,res)
       if(!isToUser){
          throw new Error("Invalid receiver id");
       }
+
+      const existingConnectionRequest = await User.findOne({
+         $or:[
+            {fromUserId,toUserId},
+            {fromUserId:toUserId,toUSerId:fromUserId}
+         ]
+      })
       
       const connection = new connectionModel({
          fromUserId:fromUserId,
