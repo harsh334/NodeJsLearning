@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const authRouter = require("./router/authRouter.js");
 const profileRouter = require('./router/profileRouter.js');
 const requestRouter = require('./router/requestRouter.js');
+const connectionRouter = require('./router/connectionRouter.js');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(cookieParser()); //middleware for reading the cookies
 
 app.use("/",authRouter);
 app.use("/",profileRouter);
+app.use("/",connectionRouter);
 app.use("/",requestRouter);
 
 app.listen(3000);
