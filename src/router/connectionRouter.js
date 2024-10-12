@@ -68,6 +68,22 @@ connectionRouter.post("/review/:status/:requestId",userAuth,async (req,res) => {
    catch(err){
       res.status(400).send("Error occured "+err.message);
    }
+});
+
+connectionRouter.get("/user/requests/received",userAuth,async (req,res)=>{
+   try{
+      const loggedInUser = req.user;
+
+      const connectionRequests = await connectionModel.find({
+         toUserId:loggedInUser._id,
+         status:"interested"
+      }).populate("fromUserId",["firstName","lastName"]);
+      res.json(connectionRequests);
+   }
+
+   catch(err){
+      res.status(400).send("error occured "+err.message);
+   }
 })
 
 module.exports = connectionRouter;
