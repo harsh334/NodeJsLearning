@@ -7,15 +7,15 @@ const requestRouter = express.Router();
 
 
 //get all data
-requestRouter.get('/feed',async (req,res)=>{
-   try{
-      const users = await User.find();
-      res.send(users);
-   }
-   catch(err){
-      res.status(400).send("Something went wrong");
-   }
-})
+// requestRouter.get('/feed',async (req,res)=>{
+//    try{
+//       const users = await User.find();
+//       res.send(users);
+//    }
+//    catch(err){
+//       res.status(400).send("Something went wrong");
+//    }
+// })
 
 //get specific data
 requestRouter.get('/user',async (req,res)=>{

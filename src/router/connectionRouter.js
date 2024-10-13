@@ -11,7 +11,7 @@ connectionRouter.post("/request/send/:status/:toUserId",userAuth,async (req,res)
       const toUserId = req.params.toUserId;
       const status = req.params.status;
       
-      const allowedStatus = ["intrested","ignored"];
+      const allowedStatus = ["interested","ignored"];
       if(!allowedStatus.includes(status)){
          throw new Error("Status Invalid");
       }
@@ -83,6 +83,41 @@ connectionRouter.get("/user/requests/received",userAuth,async (req,res)=>{
 
    catch(err){
       res.status(400).send("error occured "+err.message);
+   }
+})
+
+
+connectionRouter.get("/feed",userAuth, async (req,res)=>{
+   try{
+
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const skip = (page - 1)*limit;
+
+      const loggedInUserId = req.user._id
+      const connectionRequests = await connectionModel.find({
+         $or:[{fromUserId:loggedInUserId},{toUserId:loggedInUserId}]
+      }).select("fromUserId toUserId");
+
+      const hideUsersFromFeed = new Set();
+      connectionRequests.forEach((req)=>{
+         hideUsersFromFeed.add(req.fromUserId.toString());
+         hideUsersFromFeed.add(req.toUserId.toString());
+      })
+
+      const users = await User.find({
+         $and : [
+            {_id:{$nin:Array.from(hideUsersFromFeed)}},
+            {_id:{$ne: loggedInUserId}}
+         ]
+      })
+         .select("firstName lastName emailId")
+         .skip(skip)
+         .limit(limit);
+      res.send(users);
+   }
+   catch(err){
+      res.status(400).json({message:err.message})
    }
 })
 
